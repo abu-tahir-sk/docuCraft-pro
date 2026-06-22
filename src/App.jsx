@@ -391,7 +391,7 @@ export default function App() {
               </div>
 
               {/* Top Solid Gray Divider */}
-              <div className="border-t border-gray-300 mb-8"></div>
+              <div className="border-t border-blue-300 mb-8"></div>
 
               {/* CLIENT & INVOICE DETAILS GRID */}
               <div className="flex justify-between items-start mb-8">
@@ -473,10 +473,11 @@ export default function App() {
                   </div>
                 </div>
               )}
-
+               
               {/* TOTALS & AMOUNT IN WORDS */}
               {docType !== 'agreement' && (
                 <div className="flex justify-between items-start mb-8">
+                 
                   <div className="w-[50%] pr-4">
                     <h4 className="text-[11px] font-bold text-blue-600 uppercase tracking-widest mb-2">Amount in Words</h4>
                     <div className="bg-[#f0f4fa] text-gray-700 px-4 py-3 rounded-lg text-[13px] leading-relaxed mb-6">
@@ -512,11 +513,14 @@ export default function App() {
                 </div>
               )}
 
-             
-
+          
+              
               {/* PAYMENT INFORMATION */}
               {docType !== 'agreement' && (
+                
+                
                 <div className="mb-8">
+                   <div className="border-t border-blue-300 mb-2"></div> 
                   <h4 className="text-[11px] font-bold text-blue-600 uppercase tracking-widest mb-4">Payment Information</h4>
                   <div className="grid grid-cols-3 gap-6">
                     <div className="flex items-start gap-3">
@@ -560,7 +564,7 @@ export default function App() {
               {/* Bottom Divider & Footer */}
               <div>
                  {/* Middle Divider */}
-              <div className="border-t border-gray-300"></div>
+              <div className="border-t border-blue-300"></div>
                 <div className="flex flex-col items-center justify-center text-center mt-3">
                   <div className="flex items-center gap-1.5 text-blue-600 font-medium text-[13px] mb-1">
                     <Heart size={14} className="fill-blue-600" />
