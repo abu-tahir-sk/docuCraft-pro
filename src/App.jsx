@@ -309,7 +309,7 @@ export default function App() {
             </section>
           )}
 
-        
+          <hr className="border-gray-100" />
 
           {docType !== 'agreement' && (
             <section className="space-y-4">
@@ -346,10 +346,10 @@ export default function App() {
 
         </aside>
 
-        {/* RIGHT WORKSPACE: PDF PREVIEW */}
-        <section className="flex-1 overflow-y-auto p-4 lg:p-10 flex justify-center bg-[#f3f4f6] custom-scrollbar">
+        {/* RIGHT WORKSPACE: PERFECT A4 PDF PREVIEW */}
+        <section className="flex-1 overflow-y-auto p-4 lg:p-10 flex justify-center bg-gray-300 custom-scrollbar">
           
-          <div ref={pdfRef} className="bg-white text-gray-900 shadow-xl relative" style={{ width: '210mm', minHeight: '297mm', padding: '15mm 20mm' }}>
+          <div ref={pdfRef} className="bg-white text-gray-900 shadow-2xl relative shrink-0 box-border" style={{ width: '210mm', minHeight: '297mm', padding: '15mm 20mm' }}>
             <div className="flex flex-col h-full">
               
               {/* TOP HEADER */}
@@ -368,55 +368,55 @@ export default function App() {
                     </div>
                   )}
                   <div>
-                    <h1 className="text-[44px] font-extrabold text-blue-600 uppercase tracking-wide leading-none">{docType}</h1>
-                    <p className="text-base font-bold text-gray-800 mt-1"># {meta.id}</p>
+                    <h1 className="text-[40px] font-extrabold text-blue-600 uppercase tracking-wide leading-none">{docType}</h1>
+                    <p className="text-sm font-bold text-gray-800 mt-1"># {meta.id}</p>
                   </div>
                 </div>
 
                 {/* Right Side: Company Info & Icons */}
-                <div className="text-right flex flex-col items-end">
-                  <h2 className="text-xl font-bold text-blue-600 mb-3">{from.name}</h2>
+                <div className="text-right flex flex-col items-end max-w-[50%]">
+                  <h2 className="text-lg font-bold text-blue-600 mb-2">{from.name}</h2>
                   
-                  <div className="flex items-center justify-end gap-2 text-[13px] text-gray-700 mb-1.5 w-full">
-                    {from.email} <Mail size={14} className="text-blue-600 shrink-0" />
+                  <div className="flex items-center justify-end gap-2 text-[13px] text-gray-700 mb-1 w-full">
+                    <span className="truncate">{from.email}</span> <Mail size={14} className="text-blue-600 shrink-0" />
                   </div>
-                  <div className="flex items-center justify-end gap-2 text-[13px] text-gray-700 mb-1.5 w-full">
-                    {from.phone} <Phone size={14} className="text-blue-600 shrink-0" />
+                  <div className="flex items-center justify-end gap-2 text-[13px] text-gray-700 mb-1 w-full">
+                    <span>{from.phone}</span> <Phone size={14} className="text-blue-600 shrink-0" />
                   </div>
                   <div className="flex items-start justify-end gap-2 text-[13px] text-gray-700 text-right w-full">
-                    <span className="whitespace-pre-line">{from.address}</span>
+                    <span className="whitespace-pre-line break-words leading-snug">{from.address}</span>
                     <MapPin size={16} className="text-blue-600 shrink-0 mt-0.5" />
                   </div>
                 </div>
               </div>
 
               {/* Top Solid Gray Divider */}
-              <div className="border-t border-blue-300 mb-8"></div>
+              <div className="w-full border-t border-blue-300 mb-6"></div>
 
               {/* CLIENT & INVOICE DETAILS GRID */}
               <div className="flex justify-between items-start mb-8">
-                <div className="w-1/2 pr-6">
-                  <span className="inline-block bg-blue-50 text-blue-600 font-bold px-3 py-1 rounded-md text-[11px] mb-4">
+                <div className="w-1/2 pr-4">
+                  <span className="inline-block bg-blue-50 text-blue-600 font-bold px-3 py-1 rounded-md text-[11px] mb-3 uppercase tracking-wider">
                     BILLED TO
                   </span>
-                  <h3 className="text-lg font-bold text-gray-900 mb-3">{to.name}</h3>
-                  <div className="flex items-center gap-2 text-[13px] text-gray-700 mb-1.5">
-                    <Mail size={14} className="text-blue-600" /> {to.email}
+                  <h3 className="text-[15px] font-bold text-gray-900 mb-2">{to.name}</h3>
+                  <div className="flex items-center gap-2 text-[13px] text-gray-700 mb-1">
+                    <Mail size={14} className="text-blue-600 shrink-0" /> <span className="break-all">{to.email}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-[13px] text-gray-700 mb-1.5">
-                    <Phone size={14} className="text-blue-600" /> {to.phone}
+                  <div className="flex items-center gap-2 text-[13px] text-gray-700 mb-1">
+                    <Phone size={14} className="text-blue-600 shrink-0" /> <span>{to.phone}</span>
                   </div>
                   <div className="flex items-start gap-2 text-[13px] text-gray-700">
                     <MapPin size={16} className="text-blue-600 shrink-0 mt-0.5" />
-                    <span className="whitespace-pre-line">{to.address}</span>
+                    <span className="whitespace-pre-line break-words leading-snug">{to.address}</span>
                   </div>
                 </div>
                 
-                <div className="w-1/2 pl-6">
-                  <span className="inline-block bg-blue-50 text-blue-600 font-bold px-3 py-1 rounded-md text-[11px] mb-4">
+                <div className="w-1/2 pl-4 border-l border-gray-100">
+                  <span className="inline-block bg-blue-50 text-blue-600 font-bold px-3 py-1 rounded-md text-[11px] mb-3 uppercase tracking-wider">
                     INVOICE DETAILS
                   </span>
-                  <div className="grid grid-cols-[110px_10px_1fr] gap-y-2.5 text-[13px]">
+                  <div className="grid grid-cols-[100px_10px_1fr] gap-y-2 text-[13px]">
                     <span className="font-semibold text-gray-800">Invoice Date</span>
                     <span className="text-gray-500">:</span>
                     <span className="text-gray-700">{formatDate(meta.date)}</span>
@@ -433,7 +433,7 @@ export default function App() {
 
                         <span className="font-semibold text-gray-800">Payment Terms</span>
                         <span className="text-gray-500">:</span>
-                        <span className="text-gray-700">{meta.paymentTerms}</span>
+                        <span className="text-gray-700 break-words">{meta.paymentTerms}</span>
                       </>
                     )}
                   </div>
@@ -446,21 +446,21 @@ export default function App() {
                   <table className="w-full text-left border-collapse border border-gray-200">
                     <thead>
                       <tr className="bg-blue-600 text-white">
-                        <th className="py-2.5 px-3 text-[11px] font-semibold w-[5%] border-r border-blue-500 text-center">#</th>
-                        <th className="py-2.5 px-4 text-[11px] font-semibold w-[45%] border-r border-blue-500 uppercase">Description of Service</th>
-                        <th className="py-2.5 px-4 text-[11px] font-semibold w-[15%] border-r border-blue-500 text-center uppercase">Qty / Hrs</th>
-                        <th className="py-2.5 px-4 text-[11px] font-semibold w-[15%] border-r border-blue-500 text-center uppercase">Rate ({meta.currency})</th>
-                        <th className="py-2.5 px-4 text-[11px] font-semibold w-[20%] text-center uppercase">Amount ({meta.currency})</th>
+                        <th className="py-2.5 px-3 text-[11px] font-bold w-[5%] border-r border-blue-500 text-center">#</th>
+                        <th className="py-2.5 px-3 text-[11px] font-bold w-[45%] border-r border-blue-500 uppercase">Description of Service</th>
+                        <th className="py-2.5 px-3 text-[11px] font-bold w-[15%] border-r border-blue-500 text-center uppercase">Qty / Hrs</th>
+                        <th className="py-2.5 px-3 text-[11px] font-bold w-[15%] border-r border-blue-500 text-center uppercase">Rate ({meta.currency})</th>
+                        <th className="py-2.5 px-3 text-[11px] font-bold w-[20%] text-center uppercase">Amount ({meta.currency})</th>
                       </tr>
                     </thead>
                     <tbody>
                       {items.map((item, i) => (
                         <tr key={i} className="border-b border-gray-200">
                           <td className="py-3 px-3 text-[13px] text-gray-600 text-center border-r border-gray-200">{i + 1}</td>
-                          <td className="py-3 px-4 text-[13px] text-gray-800 border-r border-gray-200">{item.desc}</td>
-                          <td className="py-3 px-4 text-[13px] text-gray-600 text-center border-r border-gray-200">{item.qty}</td>
-                          <td className="py-3 px-4 text-[13px] text-gray-600 text-center border-r border-gray-200">{item.rate.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
-                          <td className="py-3 px-4 text-[13px] font-bold text-gray-900 text-right">{(item.qty * item.rate).toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+                          <td className="py-3 px-3 text-[13px] text-gray-800 border-r border-gray-200 break-words">{item.desc}</td>
+                          <td className="py-3 px-3 text-[13px] text-gray-600 text-center border-r border-gray-200">{item.qty}</td>
+                          <td className="py-3 px-3 text-[13px] text-gray-600 text-center border-r border-gray-200">{item.rate.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+                          <td className="py-3 px-3 text-[13px] font-bold text-gray-900 text-right break-words">{(item.qty * item.rate).toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -468,93 +468,91 @@ export default function App() {
                 </div>
               ) : (
                 <div className="mb-8 flex-grow">
-                  <div className="prose max-w-none text-sm font-serif leading-loose whitespace-pre-line text-gray-800 text-justify">
+                  <div className="prose max-w-none text-[13px] font-serif leading-relaxed whitespace-pre-line text-gray-800 text-justify break-words">
                     {texts.agreementText}
                   </div>
                 </div>
               )}
-               
+
               {/* TOTALS & AMOUNT IN WORDS */}
               {docType !== 'agreement' && (
-                <div className="flex justify-between items-start mb-8">
-                 
+                <div className="flex justify-between items-start mb-6">
                   <div className="w-[50%] pr-4">
                     <h4 className="text-[11px] font-bold text-blue-600 uppercase tracking-widest mb-2">Amount in Words</h4>
-                    <div className="bg-[#f0f4fa] text-gray-700 px-4 py-3 rounded-lg text-[13px] leading-relaxed mb-6">
+                    <div className="bg-[#f0f4fa] text-gray-700 px-4 py-3 rounded-lg text-[13px] font-medium leading-relaxed mb-5 border border-blue-50 break-words">
                       {numberToWords(total)}
                     </div>
 
                     <h4 className="text-[11px] font-bold text-blue-600 uppercase tracking-widest mb-2">Notes</h4>
-                    <p className="text-[12px] text-gray-700 whitespace-pre-line leading-relaxed">
+                    <p className="text-[12px] text-gray-600 whitespace-pre-line leading-relaxed break-words">
                       {texts.notes}
                     </p>
                   </div>
 
                   <div className="w-[45%] rounded-xl overflow-hidden border border-gray-200 flex flex-col">
                     <div className="px-5 py-3 flex justify-between items-center border-b border-gray-200">
-                      <span className="text-[13px] font-bold text-gray-800">Subtotal</span>
-                      <span className="text-[14px] font-bold text-gray-900">{meta.currency}{subtotal.toLocaleString('en-IN', {minimumFractionDigits: 2})}</span>
+                      <span className="text-[12px] font-bold text-gray-600 uppercase tracking-wide">Subtotal</span>
+                      <span className="text-[13px] font-bold text-gray-900">{meta.currency} {subtotal.toLocaleString('en-IN', {minimumFractionDigits: 2})}</span>
                     </div>
                     {financials.discount > 0 && (
-                      <div className="px-5 py-3 flex justify-between items-center border-b border-gray-200 text-gray-600">
-                        <span className="text-[13px] font-semibold">Discount</span>
-                        <span className="text-[14px] font-semibold">- {meta.currency}{financials.discount.toLocaleString('en-IN', {minimumFractionDigits: 2})}</span>
+                      <div className="px-5 py-3 flex justify-between items-center border-b border-gray-200 text-red-500">
+                        <span className="text-[12px] font-bold uppercase tracking-wide">Discount</span>
+                        <span className="text-[13px] font-bold">- {meta.currency} {financials.discount.toLocaleString('en-IN', {minimumFractionDigits: 2})}</span>
                       </div>
                     )}
                     <div className="px-5 py-3 flex justify-between items-center border-b border-gray-200">
-                      <span className="text-[13px] font-semibold text-gray-700">Tax ({financials.taxRate}%)</span>
-                      <span className="text-[14px] font-bold text-gray-900">{meta.currency}{taxAmount.toLocaleString('en-IN', {minimumFractionDigits: 2})}</span>
+                      <span className="text-[12px] font-bold text-gray-600 uppercase tracking-wide">Tax ({financials.taxRate}%)</span>
+                      <span className="text-[13px] font-bold text-gray-900">{meta.currency} {taxAmount.toLocaleString('en-IN', {minimumFractionDigits: 2})}</span>
                     </div>
                     <div className="px-5 py-4 flex justify-between items-center bg-[#f0f4fa]">
-                      <span className="text-[15px] font-bold text-blue-600 uppercase tracking-wider">Total</span>
-                      <span className="text-[20px] font-extrabold text-blue-600">{meta.currency}{total.toLocaleString('en-IN', {minimumFractionDigits: 2})}</span>
+                      <span className="text-[14px] font-bold text-blue-600 uppercase tracking-widest">Total</span>
+                      <span className="text-[18px] font-black text-blue-600 break-words">{meta.currency} {total.toLocaleString('en-IN', {minimumFractionDigits: 2})}</span>
                     </div>
                   </div>
                 </div>
               )}
 
-          
-              
+             
+
               {/* PAYMENT INFORMATION */}
               {docType !== 'agreement' && (
-                
-                
-                <div className="mb-8">
-                   <div className="border-t border-blue-300 mb-2"></div> 
+                <div className="mb-6">
+                   {/* Middle Divider */}
+              <div className="w-full border-t border-blue-300 mb-6 mt-auto"></div>
                   <h4 className="text-[11px] font-bold text-blue-600 uppercase tracking-widest mb-4">Payment Information</h4>
-                  <div className="grid grid-cols-3 gap-6">
+                  <div className="grid grid-cols-3 gap-4">
                     <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 rounded-md bg-blue-50 flex items-center justify-center shrink-0">
+                      <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 border border-blue-100">
                         <Landmark size={20} className="text-blue-600" />
                       </div>
-                      <div className="text-[11px] text-gray-700 space-y-0.5">
-                        <p className="font-bold text-gray-900">Bank Transfer</p>
-                        <p>{payment.accountName}</p>
-                        <p>A/C No: {payment.accountNo}</p>
-                        <p>IFSC: {payment.ifsc}</p>
-                        <p>Bank: {payment.bankName}</p>
+                      <div className="text-[11px] text-gray-700 space-y-1 w-full pr-2">
+                        <p className="font-bold text-gray-900 mb-1">Bank Transfer</p>
+                        <p className="break-words">{payment.accountName}</p>
+                        <p className="break-all">A/C: <span className="font-medium text-gray-900">{payment.accountNo}</span></p>
+                        <p>IFSC: <span className="font-medium text-gray-900">{payment.ifsc}</span></p>
+                        <p className="break-words">Bank: {payment.bankName}</p>
                       </div>
                     </div>
 
-                    <div className="flex items-start gap-3 border-l border-gray-200 pl-6">
-                      <div className="w-10 h-10 rounded-md bg-blue-50 flex items-center justify-center shrink-0">
+                    <div className="flex items-start gap-3 border-l border-gray-200 pl-4">
+                      <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 border border-blue-100">
                         <CreditCard size={20} className="text-blue-600" />
                       </div>
-                      <div className="text-[11px] text-gray-700 space-y-0.5">
-                        <p className="font-bold text-gray-900">UPI Payment</p>
-                        <p>{payment.upiName}</p>
-                        <p>{payment.upiNumber}</p>
+                      <div className="text-[11px] text-gray-700 space-y-1 w-full pr-2">
+                        <p className="font-bold text-gray-900 mb-1">UPI Payment</p>
+                        <p className="break-words">{payment.upiName}</p>
+                        <p className="font-medium text-gray-900 break-all">{payment.upiNumber}</p>
                       </div>
                     </div>
 
-                    <div className="flex items-start gap-3 border-l border-gray-200 pl-6">
-                      <div className="w-10 h-10 rounded-md bg-blue-50 flex items-center justify-center shrink-0">
+                    <div className="flex items-start gap-3 border-l border-gray-200 pl-4">
+                      <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 border border-blue-100">
                         <FileDigit size={20} className="text-blue-600" />
                       </div>
-                      <div className="text-[11px] text-gray-700 space-y-0.5">
-                        <p className="font-bold text-gray-900">Other Details</p>
-                        <p>PAN: {payment.pan}</p>
-                        <p>GSTIN: {payment.gstin}</p>
+                      <div className="text-[11px] text-gray-700 space-y-1 w-full">
+                        <p className="font-bold text-gray-900 mb-1">Other Details</p>
+                        <p>PAN: <span className="font-medium text-gray-900 break-all">{payment.pan}</span></p>
+                        <p>GSTIN: <span className="font-medium text-gray-900 break-all">{payment.gstin}</span></p>
                       </div>
                     </div>
                   </div>
@@ -563,14 +561,13 @@ export default function App() {
 
               {/* Bottom Divider & Footer */}
               <div>
-                 {/* Middle Divider */}
-              <div className="border-t border-blue-300"></div>
-                <div className="flex flex-col items-center justify-center text-center mt-3">
-                  <div className="flex items-center gap-1.5 text-blue-600 font-medium text-[13px] mb-1">
+                <div className="w-full border-t border-blue-300 mb-4"></div>
+                <div className="flex justify-between items-center text-center">
+                  <div className="flex items-center gap-1.5 text-blue-600 font-bold text-[12px]">
                     <Heart size={14} className="fill-blue-600" />
                     Thank you for your business!
                   </div>
-                  <p className="text-[12px] text-gray-500">{from.website}</p>
+                  <p className="text-[12px] font-semibold text-gray-500">{from.website}</p>
                 </div>
               </div>
 
