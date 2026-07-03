@@ -37,10 +37,10 @@ const PdfPreviewArea = () => {
   };
 
   return (
-    <section className="bg-[#525659] p-4 lg:p-10 flex justify-center custom-scrollbar" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <section className="flex-1 overflow-y-auto p-4 lg:p-10 flex justify-center  custom-scrollbar shadow-inner relative" style={{ fontFamily: "'Inter', sans-serif" }}>
       <div 
         ref={pdfRef} 
-        className="bg-white text-slate-800 shadow-2xl shrink-0 w-[794px] min-h-[1123px] p-10 print:m-0 print:shadow-none" 
+        className="bg-white text-slate-800 shadow-2xl relative shrink-0 box-border flex flex-col print-exact overflow-hidden" 
         style={{ width: '794px', height: '1123px', padding: '30px 40px' }}
       >
         {renderWatermark()}

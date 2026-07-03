@@ -1,144 +1,193 @@
 import React from 'react';
-import { Mail, Phone, MapPin, Building2, Calendar, FileText, CheckCircle2, ShieldCheck, Landmark, CreditCard, QrCode } from 'lucide-react';
+import { Mail, Phone, MapPin, Landmark, CreditCard, FileText, Heart } from 'lucide-react';
 import { formatDate } from '../utils';
 
 const QuotationLayout = ({ contextData }) => {
   const { theme, appState, calculated } = contextData;
-  const { labels, meta, from, to, items, financials, payment, texts, terms } = appState;
+  const { labels, meta, from, to, items, financials, payment, texts } = appState;
   const { subtotal, taxAmount, total, amountInWords } = calculated;
 
-  const discount = financials?.discount || 0;
-  const grandTotal = total;
+  const mainColor = theme?.main || 'text-blue-600';
+  const bgColor = theme?.bg || 'bg-blue-600';
+  const lightBg = theme?.bgLight || 'bg-blue-50';
 
   return (
-    <div className=" bg-white text-slate-800 shadow-2xl mx-auto p-10 font-sans print:shadow-none print:m-0">
-      
-      {/* SECTION 1: MAIN BODY (Watermark confined here) */}
-      <div className="relative">
-        <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none opacity-[0.05]">
-          <span className="text-[100px] font-black uppercase tracking-widest -rotate-45">Quotation</span>
-        </div>
-
-        <div className="relative z-10">
-            {/* Header */}
-            <header className="flex justify-between items-start mb-8">
-                <div className="flex gap-4">
-                    {from.logo ? <img src={from.logo} className="w-16 h-16 object-contain rounded-xl border border-slate-100" alt="Logo" /> : <div className="w-16 h-16 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400"><Building2 size={24}/></div>}
-                    <div>
-                        <h2 className="text-[20px] font-black text-slate-900 uppercase">{from.name}</h2>
-                        <div className="text-[10px] text-slate-500 mt-1">
-                            <p>{from.address}</p>
-                            <p>{from.email} • {from.phone}</p>
-                        </div>
-                    </div>
+    // Added h-full and flex flex-col to utilize the full A4 page height
+    <div className="w-full h-full min-h-[1050px] flex flex-col font-sans relative">
+       
+       {/* 1. HEADER SECTION */}
+       <div className="flex justify-between items-start mb-10">
+          <div className="flex items-center gap-4">
+             {from.logo ? (
+                <img src={from.logo} alt="Logo" className="w-20 h-20 object-contain rounded-xl shadow-sm" />
+             ) : (
+                <div className={`w-20 h-20 ${bgColor} rounded-xl shadow-sm`}></div>
+             )}
+             <div>
+                <h1 className={`text-[46px] font-black uppercase tracking-tight leading-none ${mainColor}`}>
+                   {appState.docType || 'QUOTATION'}
+                </h1>
+                <p className="text-[13px] font-bold text-slate-800 mt-1"># {meta.id}</p>
+             </div>
+          </div>
+          <div className="text-[11px] text-slate-700 text-right space-y-1.5 pt-1">
+             <h2 className={`text-[16px] font-bold mb-2 ${mainColor}`}>{from.name}</h2>
+             {from.email && (
+                <div className="flex items-center justify-end gap-2">
+                   <span>{from.email}</span> <Mail size={13} className={mainColor} />
                 </div>
-                <div className="text-right">
-                    <h1 className="text-[32px] font-black text-slate-900 uppercase leading-none">Quotation</h1>
-                    <p className="text-[12px] font-bold text-slate-500"># {meta.id}</p>
+             )}
+             {from.phone && (
+                <div className="flex items-center justify-end gap-2">
+                   <span>{from.phone}</span> <Phone size={13} className={mainColor} />
                 </div>
-            </header>
-
-            {/* Client Info Grid */}
-            <div className="grid grid-cols-2 gap-6 mb-8">
-                <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                    <h4 className="text-[9px] font-bold text-slate-400 uppercase mb-2">Prepared For</h4>
-                    <p className="text-[14px] font-black text-slate-900">{to.name}</p>
-                    <p className="text-[11px] font-bold text-slate-700 mb-1">{to.companyName}</p>
-                    <p className="text-[10px] text-slate-600 leading-snug">{to.address}</p>
+             )}
+             {from.address && (
+                <div className="flex items-start justify-end gap-2">
+                   <span className="whitespace-pre-line text-right">{from.address}</span> 
+                   <MapPin size={13} className={`mt-0.5 ${mainColor}`} />
                 </div>
-                <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                    <h4 className="text-[9px] font-bold text-slate-400 uppercase mb-2">Quotation Details</h4>
-                    <div className="text-[11px] space-y-1">
-                        <p className="flex justify-between"><span>Date:</span> <b>{formatDate(meta.date)}</b></p>
-                        <p className="flex justify-between"><span>Valid Until:</span> <b>{formatDate(meta.dueDate)}</b></p>
-                    </div>
+             )}
+          </div>
+       </div>
+
+       {/* 2. CLIENT & QUOTATION DETAILS */}
+       <div className="grid grid-cols-2 gap-10 mb-8">
+          {/* Billed To */}
+          <div>
+             <span className={`inline-block px-4 py-1.5 ${lightBg} ${mainColor} font-bold text-[9px] uppercase tracking-widest rounded-full mb-4`}>
+                BILLED TO
+             </span>
+             <h3 className="text-[15px] font-black text-slate-900 mb-2">{to.name}</h3>
+             <div className="text-[11px] text-slate-600 space-y-2">
+                {to.email && <div className="flex items-center gap-2"><Mail size={13} className={mainColor} /> <span>{to.email}</span></div>}
+                {to.phone && <div className="flex items-center gap-2"><Phone size={13} className={mainColor} /> <span>{to.phone}</span></div>}
+                {to.address && <div className="flex items-start gap-2"><MapPin size={13} className={`mt-0.5 ${mainColor}`} /> <span className="whitespace-pre-line">{to.address}</span></div>}
+             </div>
+          </div>
+
+          {/* Quotation Details */}
+          <div className="pl-6">
+             <span className={`inline-block px-4 py-1.5 ${lightBg} ${mainColor} font-bold text-[9px] uppercase tracking-widest rounded-full mb-4`}>
+                QUOTATION DETAILS
+             </span>
+             <div className="grid grid-cols-[100px_1fr] gap-y-2.5 text-[11px] text-slate-700">
+                <p className="text-slate-500 font-medium">Quotation Date</p> <p>: {formatDate(meta.date)}</p>
+                <p className="text-slate-500 font-medium">Valid Until</p> <p>: {formatDate(meta.dueDate)}</p>
+                <p className="text-slate-500 font-medium">Currency</p> <p>: {meta.currency || 'INR (₹)'}</p>
+                <p className="text-slate-500 font-medium">Payment Terms</p> <p>: {meta.paymentTerms || '-'}</p>
+             </div>
+          </div>
+       </div>
+
+       {/* 3. SERVICE TABLE */}
+       <div className="mb-6">
+          <table className="w-full text-left border-collapse   ">
+             <thead>
+                <tr className={`${bgColor}  backdrop-blur-none text-white text-[10px] font-bold uppercase tracking-wider`}>
+                   <th className="py-3.5 px-4 w-[6%] text-center border-r border-white/20">#</th>
+                   <th className="py-3.5 px-4 w-[44%] border-r border-white/20">{labels.desc || 'DESCRIPTION OF SERVICE'}</th>
+                   <th className="py-3.5 px-4 w-[15%] text-center border-r border-white/20">QTY / HRS</th>
+                   <th className="py-3.5 px-4 w-[15%] text-center border-r border-white/20">RATE (₹)</th>
+                   <th className="py-3.5 px-4 w-[20%] text-center">AMOUNT (₹)</th>
+                </tr>
+             </thead>
+             <tbody>
+                {items.map((item, i) => (
+                   <tr key={item.id || i} className="border-b border-slate-200  hover:bg-slate-50/50">
+                      <td className="py-4 px-4 text-[12px] text-center text-slate-600 border-r border-slate-200 align-top">{i + 1}</td>
+                      <td className="py-4 px-4 text-[12px] text-slate-800 font-medium border-r border-slate-200 whitespace-pre-wrap align-top">{item.desc}</td>
+                      <td className="py-4 px-4 text-[12px] text-center text-slate-600 border-r border-slate-200 align-top">{item.qty}</td>
+                      <td className="py-4 px-4 text-[12px] text-center text-slate-600 border-r border-slate-200 align-top">{Number(item.rate).toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+                      <td className="py-4 px-4 text-[12px] text-center font-bold text-slate-900 align-top">{Number(item.qty * item.rate).toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+                   </tr>
+                ))}
+             </tbody>
+          </table>
+       </div>
+
+       {/* 4. SUMMARY & AMOUNT IN WORDS */}
+       <div className="flex justify-between items-start gap-8">
+          <div className="w-[55%]">
+             <h4 className={`text-[10px] font-bold ${mainColor} uppercase tracking-widest mb-2`}>{labels.amtWords || 'AMOUNT IN WORDS'}</h4>
+             <div className="bg-[#f4f6f8] backdrop-blur-none rounded-xl p-4 text-[11px] font-medium text-slate-700 mb-6 leading-relaxed border border-slate-100">
+                {amountInWords}
+             </div>
+             
+             <h4 className={`text-[10px] font-bold ${mainColor} uppercase tracking-widest mb-2`}>{labels.notes || 'NOTES'}</h4>
+             <p className="text-[11px] text-slate-600 whitespace-pre-line leading-relaxed">
+                {texts.notes || "Thank you for choosing TechFlow Solutions.\nPayment is due within 15 days via NEFT/RTGS."}
+             </p>
+          </div>
+
+          <div className="w-[45%] border border-slate-200 rounded-xl overflow-hidden shadow-sm flex flex-col">
+             <div className="flex justify-between items-center p-4 border-b border-slate-200 ">
+                <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">{labels.subtotal || 'SUBTOTAL'}</span>
+                <span className="text-[12px] font-bold text-slate-900">₹ {subtotal.toLocaleString('en-IN', {minimumFractionDigits: 2})}</span>
+             </div>
+             <div className="flex justify-between items-center p-4 border-b border-slate-200 ">
+                <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">{labels.tax || 'TAX'} ({financials.taxRate || 18}%)</span>
+                <span className="text-[12px] font-bold text-slate-900">₹ {taxAmount.toLocaleString('en-IN', {minimumFractionDigits: 2})}</span>
+             </div>
+             <div className={`flex justify-between items-center p-4 ${lightBg} mt-auto`}>
+                <span className={`text-[13px] font-bold ${mainColor} uppercase tracking-wider`}>{labels.total || 'TOTAL'}</span>
+                <span className={`text-[17px] font-black ${mainColor}`}>₹ {total.toLocaleString('en-IN', {minimumFractionDigits: 2})}</span>
+             </div>
+          </div>
+       </div>
+
+       {/* 5. ANCHORED BOTTOM SECTION (Pushed to the bottom using mt-auto) */}
+       <div className="mt-auto pt-8">
+          {/* Separator */}
+          <div className="w-full border-t border-blue-200/60 mb-6"></div>
+
+          {/* PAYMENT INFORMATION */}
+          <div className="mb-4">
+             <h4 className={`text-[10px] font-bold ${mainColor} uppercase tracking-widest mb-4`}>PAYMENT INFORMATION</h4>
+             <div className="grid grid-cols-3 gap-6">
+                {/* Bank Transfer */}
+                <div className="flex gap-3">
+                   <div className={`w-10 h-10 rounded-xl ${lightBg} ${mainColor} flex items-center justify-center shrink-0`}>
+                      <Landmark size={18} />
+                   </div>
+                   <div className="text-[10px] text-slate-600 space-y-1">
+                      <p className="font-bold text-slate-900 text-[11px] mb-1">Bank Transfer</p>
+                      <p>{payment.bankName}</p>
+                      <p>A/C: {payment.accountNo}</p>
+                      <p>IFSC: {payment.ifsc}</p>
+                   </div>
                 </div>
-            </div>
-
-            {/* Table */}
-            <div className="mb-6 rounded-xl border border-slate-200 overflow-hidden">
-                <table className="w-full text-left border-collapse">
-                    <thead className={`${theme?.bg || 'bg-slate-800'} text-white text-[10px] uppercase`}>
-                        <tr>
-                            <th className="py-3 px-4 w-[8%] text-center">#</th>
-                            <th className="py-3 px-4 w-[45%]">Description</th>
-                            <th className="py-3 px-4 w-[12%] text-center">Qty</th>
-                            <th className="py-3 px-4 w-[15%] text-right">Rate</th>
-                            <th className="py-3 px-4 w-[20%] text-right">Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                        {items.map((item, i) => (
-                            <tr key={i} className="hover:bg-slate-50">
-                                <td className="py-4 px-4 text-[12px] text-center align-top">{i + 1}</td>
-                                <td className="py-4 px-4 align-top">
-                                    <p className="text-[13px] font-bold text-slate-900">{item.name || item.desc?.split('\n')[0]}</p>
-                                    <p className="text-[11px] text-slate-500 whitespace-pre-wrap">{item.desc?.substring(item.desc.indexOf('\n') + 1)}</p>
-                                </td>
-                                <td className="py-4 px-4 text-[12px] text-center font-semibold">{item.qty}</td>
-                                <td className="py-4 px-4 text-[12px] text-right">₹{Number(item.rate).toLocaleString()}</td>
-                                <td className="py-4 px-4 text-[13px] font-black text-right">₹{(item.qty * item.rate).toLocaleString()}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-
-            {/* Summary Grid */}
-            <div className="grid grid-cols-2 gap-6 mb-8">
-                <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 text-[10px]">
-                    <h4 className="font-bold uppercase text-slate-400 mb-2">Amount in Words</h4>
-                    <p className="italic text-slate-700">{amountInWords}</p>
+                {/* UPI Payment */}
+                <div className="flex gap-3 border-l border-slate-200 pl-6">
+                   <div className={`w-10 h-10 rounded-xl ${lightBg} ${mainColor} flex items-center justify-center shrink-0`}>
+                      <CreditCard size={18} />
+                   </div>
+                   <div className="text-[10px] text-slate-600 space-y-1">
+                      <p className="font-bold text-slate-900 text-[11px] mb-1">UPI Payment</p>
+                      <p>{payment.upiName}</p>
+                      <p>{payment.upiNumber}</p>
+                   </div>
                 </div>
-                <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-                    <div className="p-4 text-[12px] space-y-1">
-                        <div className="flex justify-between"><span>Subtotal</span><b>₹{subtotal.toLocaleString()}</b></div>
-                        <div className="flex justify-between"><span>Tax</span><b>₹{taxAmount.toLocaleString()}</b></div>
-                    </div>
-                    <div className={`${theme?.bg || 'bg-slate-800'} text-white p-4 flex justify-between items-center`}>
-                        <span className="text-[14px] font-bold uppercase">Grand Total</span>
-                        <span className="text-[18px] font-black">₹{grandTotal.toLocaleString()}</span>
-                    </div>
+                {/* Other Details */}
+                <div className="flex gap-3 border-l border-slate-200 pl-6">
+                   <div className={`w-10 h-10 rounded-xl ${lightBg} ${mainColor} flex items-center justify-center shrink-0`}>
+                      <FileText size={18} />
+                   </div>
+                   <div className="text-[10px] text-slate-600 space-y-1">
+                      <p className="font-bold text-slate-900 text-[11px] mb-1">Other Details</p>
+                      <p>PAN: {payment.pan}</p>
+                      <p>GSTIN: {payment.gstin}</p>
+                   </div>
                 </div>
-            </div>
-        </div>
-      </div>
+             </div>
+          </div>
 
-      {/* SECTION 2: FOOTER (No Watermark, No Flex-grow, Natural flow) */}
-      <div className="space-y-6">
-        {/* Payment Info */}
-        <div className="grid grid-cols-3 gap-4">
-            <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 text-[9px]">
-                <p className="font-bold mb-1">Bank Transfer</p>
-                <p>Name: {payment.bankName}<br/>A/C: {payment.accountNo}<br/>IFSC: {payment.ifsc}</p>
-            </div>
-            <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 text-[9px] flex items-center justify-between">
-                <p className="font-bold">UPI: {payment.upiNumber}</p>
-                <QrCode size={30} className="text-slate-400"/>
-            </div>
-            <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 text-[9px]">
-                <p className="font-bold">Other</p>
-                <p>PAN: {payment.pan || 'N/A'}<br/>GSTIN: {payment.gstin || 'N/A'}</p>
-            </div>
-        </div>
-
-        {/* Notes & Terms */}
-        <div className="grid grid-cols-2 gap-6 text-[10px]">
-            <div><h4 className="font-bold mb-1 uppercase text-slate-400">Notes</h4><p className="text-slate-600">{texts.notes || "Thank you for considering our quotation."}</p></div>
-            <div><h4 className="font-bold mb-1 uppercase text-slate-400">Terms</h4><p className="text-slate-600">{terms || "Valid for 15 days."}</p></div>
-        </div>
-
-        {/* Signatures */}
-        <div className="flex justify-between items-end border-t pt-4">
-            <div className="text-center w-40"><div className="h-8 border-b border-slate-300 mx-2 mb-1"></div><p className="text-[10px] font-bold">Client Signature</p></div>
-            <div className="text-center w-40"><div className="h-8 border-b border-slate-300 mx-2 mb-1"></div><p className="text-[10px] font-bold">Company Signature</p></div>
-        </div>
-
-        {/* Footer */}
-        <div className="text-center text-[9px] text-slate-400 border-t pt-2 uppercase">
-            Computer Generated Quotation • {from.website} • {from.email}
-        </div>
-      </div>
+          {/* FOOTER */}
+          <div className="mt-6 border-t border-blue-200/60 pt-4 flex items-center gap-2 text-blue-600 font-bold text-[11px]">
+             <Heart size={14} fill="currentColor" />
+             <p>Thank you for your business!</p>
+          </div>
+       </div>
 
     </div>
   );
