@@ -1,253 +1,171 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
-import Sidebar from "../components/Sidebar";
-import TopHeader from "../components/TopHeader";
-import { themes, numberToWords } from '../utils';
- import api from "../api/axios";
-import { LayoutDashboard, FileText, FileCheck, FileSignature, Settings, RefreshCw, Download, Cloud, ChevronLeft, LogOut, FolderArchive, Loader2 } from 'lucide-react';
-
-// PDF Generate করার লাইব্রেরি
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
-import { useAuth } from "../context/AuthContext";
+import React, { useState } from 'react';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
+import api from '../api/axios';
 
 const DashboardLayout = () => {
-  const navigate = useNavigate();
-  const { user } = useAuth();
+  // সাইডবার ডিফল্টভাবে ছোট (false) থাকবে, ক্লিক করলে বড় হবে (true)
+  const [isExpanded, setIsExpanded] = useState(false);
+  const location = useLocation();
 
-const currentUser = user?.name || user?.email || "Administrator";
-  // const [currentUser, setCurrentUser] = useState(() => localStorage.getItem('docucraft_active_user'));
-  // useEffect(() => { if (!currentUser) navigate("/"); }, [currentUser, navigate]);
+  // মেনু আইটেম এবং সেগুলোর জন্য মানানসই SVG আইকন
+  const menuItems = [
+    { 
+      name: 'Dashboard', 
+      path: '/dashboard', 
+      icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /> 
+    },
+    { 
+      name: 'Documents', 
+      path: '/dashboard/documents', 
+      icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /> 
+    },
+    { 
+      name: 'Invoice', 
+      path: '/dashboard/invoice', 
+      icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /> 
+    },
+    { 
+      name: 'Quotation', 
+      path: '/dashboard/quotation', 
+      icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" /> 
+    },
+    { 
+      name: 'Agreement', 
+      path: '/dashboard/agreement', 
+      icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /> 
+    },
+    { 
+      name: 'Saved', 
+      path: '/dashboard/saved-documents', 
+      icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /> 
+    },
+    { 
+      name: 'Settings', 
+      path: '/dashboard/settings', 
+      icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /> 
+    },
+  ];
 
-  const [activeTab, setActiveTab] = useState('builder');
-  const [isGenerating, setIsGenerating] = useState(false); // লোডিং দেখানোর জন্য
-  const pdfRef = useRef(null);
+   const navigate = useNavigate();
 
-  const [docType, setDocType] = useState('quotation');
-
-  // ================= STATES =================
-  const [settings, setSettings] = useState({ themeColor: 'blue', customCols: [], watermarkType: 'disabled', watermarkText: 'TIME DIGITALS', watermarkLogo: null, patternIntensity: 15, grainSpacing: 150, fontIconSpread: 35 });
-  const [labels, setLabels] = useState({ billedTo: 'BILLED TO', invoiceDetails: 'DOCUMENT DETAILS', invDate: 'Invoice Date', dueDate: 'Due Date', currency: 'Currency', payTerms: 'Payment Terms', poNumber: 'PO Number', status: 'Payment Status', companyTaxId: 'GSTIN', clientTaxId: 'GSTIN', desc: 'DESCRIPTION OF SERVICE', qty: 'QTY / HRS', rate: 'RATE (₹)', amount: 'AMOUNT (₹)', subtotal: 'SUBTOTAL', discount: 'DISCOUNT', tax: 'TAX', shipping: 'SHIPPING', total: 'TOTAL', amtWords: 'AMOUNT IN WORDS', notes: 'NOTES', latePolicy: 'Late Payment Policy', bankTitle: 'Bank Transfer', upiTitle: 'UPI Payment', otherTitle: 'Other Details', signTitle: 'Authorized Signature', sealTitle: 'Company Seal' });
-  const [meta, setMeta] = useState({ id: 'QT-2026-001', date: '2026-06-22', dueDate: '2026-07-07', currency: 'INR (₹)', paymentTerms: '', poNumber: '', status: 'Unpaid', subject: '' });
-  const [from, setFrom] = useState({ name: 'TechFlow Solutions Pvt. Ltd.', email: 'billing@techflow.in', phone: '+91 98765 43210', address: 'Sector V, Salt Lake\nKolkata, WB 700091\nIndia', website: '', taxId: '', logo: null, signature: null, seal: null });
-  const [to, setTo] = useState({ name: 'Acme Digital Corp.', email: 'finance@acmedigital.com', phone: '+91 91234 56789', address: '123 Business Avenue\nAndheri East, Mumbai\nMaharashtra 400069', taxId: '' });
-  const [items, setItems] = useState([{ id: 1, desc: 'Full-Stack Web Development', qty: 1, rate: 1000, custom: {} }]);
-  const [financials, setFinancials] = useState({ taxRate: 18, discount: 0, shipping: 0 });
-  const [payment, setPayment] = useState({ bankName: 'HDFC Bank', accountName: 'TechFlow Solutions', accountNo: '123456789', ifsc: 'HDFC0001234', upiName: 'techflow@upi', upiNumber: '9876543210', pan: 'ABCDE1234F', gstin: '19ABCDE1234' });
-  const [texts, setTexts] = useState({ notes: 'Thank you for your business.', latePolicy: 'Late payments attract 2% interest.' });
-  const [blocks, setBlocks] = useState([{ id: 101, type: 'paragraph', content: 'Terms and conditions apply...', align: 'left' }]);
-
-  const [savedDocs, setSavedDocs] = useState([]);
-
-  // ================= ACTIONS =================
-  const handleDocTypeChange = (type) => { setDocType(type); setActiveTab('builder'); };
-  const handleItemChange = (index, field, value) => { const n = [...items]; n[index][field] = (field === 'qty' || field === 'rate') ? (parseFloat(value) || 0) : value; setItems(n); };
-  const addItem = () => setItems([...items, { id: Date.now(), desc: '', qty: 1, rate: 0, custom: {} }]);
-  const removeItem = (index) => setItems(items.filter((_, i) => i !== index));
-
-  const subtotal = items.reduce((acc, item) => acc + (item.qty * item.rate), 0);
-  const taxAmount = (subtotal - financials.discount) * (financials.taxRate / 100);
-  const total = subtotal - financials.discount + taxAmount + (parseFloat(financials.shipping) || 0);
-  const amountInWords = numberToWords ? numberToWords(total) : '';
-  const theme = themes ? (themes[settings.themeColor] || themes.blue) : {};
-
-  const appState = { docType, settings, labels, meta, from, to, items, financials, payment, texts, blocks };
-  const appSetters = { setDocType, setSettings, setLabels, setMeta, setFrom, setTo, setItems, setFinancials, setPayment, setTexts, setBlocks };
-  const actions = { handleDocTypeChange, handleItemChange, addItem, removeItem };
-  const calculated = { subtotal, taxAmount, total, amountInWords };
-
-  const handleSaveDocument = () => {
-    const newDoc = { id: meta.id || `DOC-${Date.now()}`, docType, companyName: from.name || 'N/A', clientName: to.name || 'N/A', date: meta.date, amount: total, status: meta.status || 'Unpaid', snapshot: JSON.parse(JSON.stringify({ docType, settings, labels, meta, from, to, items, financials, payment, texts, blocks })) };
-    const existingIdx = savedDocs.findIndex(d => d.id === newDoc.id);
-    if (existingIdx > -1) { const updated = [...savedDocs]; updated[existingIdx] = newDoc; setSavedDocs(updated); alert(`Updated Successfully!`); }
-    else { setSavedDocs([...savedDocs, newDoc]); alert(`Saved Successfully!`); }
-  };
-
-  const loadDocument = (doc) => { const s = doc.snapshot; if (!s) return; setDocType(s.docType); setSettings(s.settings); setLabels(s.labels); setMeta(s.meta); setFrom(s.from); setTo(s.to); setItems(s.items); setFinancials(s.financials); setPayment(s.payment); setTexts(s.texts); setBlocks(s.blocks); setActiveTab('builder'); };
-  const deleteDocument = (id) => { if (window.confirm("Delete?")) setSavedDocs(savedDocs.filter(d => d.id !== id)); };
- 
-
-const handleLogout = async () => {
-  try {
-    await api.post("/auth/logout");
-    navigate("/login");
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-  // ================= DIRECT PDF DOWNLOAD LOGIC =================
-  const downloadPDF = async () => {
-    const input = pdfRef.current;
-    if (!input) return;
-
+  const handleLogout = async () => {
     try {
-      setIsGenerating(true); // ডাউনলোডের সময় স্পিনার দেখানোর জন্য
+      await api.post("/auth/logout");
 
-      const canvas = await html2canvas(input, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: '#ffffff'
-      });
-
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
-
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-
-      // ফাইল সেভ
-      pdf.save(`${docType.toUpperCase()}_${meta.id || 'Doc'}.pdf`);
-
+      navigate("/login");
     } catch (error) {
-      console.error("Error generating PDF: ", error);
-      alert("Failed to generate PDF!");
-    } finally {
-      setIsGenerating(false);
+      console.error(error);
     }
   };
 
   return (
-    <div className="h-screen w-screen flex font-sans bg-[#F3F4F6] overflow-hidden text-gray-800">
-
-      {/* ================= 1. GLOBAL LEFT SIDEBAR ================= */}
-      <aside className="w-[260px] bg-[#FCFAF8] border-r border-gray-200 flex flex-col shrink-0 z-30 shadow-[2px_0_15px_rgba(0,0,0,0.02)] justify-between">
-
-        <div className="flex flex-col h-full">
-          <div className="h-[70px] flex items-center px-6 border-b border-gray-200/60 shrink-0">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center text-white shadow-sm shadow-blue-200 mr-2 border border-blue-400">
-              <span className="font-bold text-lg leading-none">D</span>
-            </div>
-            <div className="flex flex-col leading-tight mt-0.5">
-              <span className="text-[17px] font-black text-gray-900 tracking-wide">DocuCraft</span>
-              <span className="text-[8px] font-extrabold text-gray-400 uppercase tracking-[0.2em]">Platform</span>
-            </div>
-          </div>
-
-          <div className="flex-1 py-5 px-3 space-y-6 overflow-y-auto custom-scrollbar">
-            {/* 1. Templates */}
-            <div>
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 px-3">Templates</p>
-              <div className="space-y-1">
-                <button onClick={() => handleDocTypeChange('invoice')} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${docType === 'invoice' && activeTab === 'builder' ? 'bg-orange-50/70 text-[#9A4D2E] font-bold shadow-sm' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`}>
-                  <FileText size={18} className={docType === 'invoice' && activeTab === 'builder' ? 'text-[#9A4D2E]' : 'text-gray-400'} /> Invoice Builder
-                </button>
-                <button onClick={() => handleDocTypeChange('quotation')} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${docType === 'quotation' && activeTab === 'builder' ? 'bg-orange-50/70 text-[#9A4D2E] font-bold shadow-sm' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`}>
-                  <FileCheck size={18} className={docType === 'quotation' && activeTab === 'builder' ? 'text-[#9A4D2E]' : 'text-gray-400'} /> Quotation Builder
-                </button>
-                <button onClick={() => handleDocTypeChange('agreement')} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${docType === 'agreement' && activeTab === 'builder' ? 'bg-orange-50/70 text-[#9A4D2E] font-bold shadow-sm' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`}>
-                  <FileSignature size={18} className={docType === 'agreement' && activeTab === 'builder' ? 'text-[#9A4D2E]' : 'text-gray-400'} /> Agreement Builder
-                </button>
-              </div>
-            </div>
-
-            <div className="h-px w-full bg-gray-200/60"></div>
-
-            {/* 2. Database */}
-            <div>
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 px-3">Database</p>
-              <button onClick={() => setActiveTab('saved')} className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${activeTab === 'saved' ? 'bg-orange-50/70 text-[#9A4D2E] font-bold shadow-sm' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`}>
-                <div className="flex items-center gap-3">
-                  <FolderArchive size={18} className={activeTab === 'saved' ? 'text-[#9A4D2E]' : 'text-gray-400'} /> Saved Documents
-                </div>
-                <span className="bg-gray-200 text-gray-600 text-[10px] font-bold px-2 py-0.5 rounded-full">{savedDocs.length}</span>
-              </button>
-            </div>
-          </div>
+    <div className="flex h-screen bg-gray-100 overflow-hidden w-full relative">
+      
+      {/* ========================================== */}
+      {/* ১. মিনি সাইডবার (Collapsible Sidebar) */}
+      {/* ========================================== */}
+      <aside 
+        className={`bg-white border-r border-gray-200 z-20 flex flex-col justify-between transition-all duration-300 ease-in-out
+        ${isExpanded ? 'w-64' : 'w-20'}`}
+      >
+        <div className="flex flex-col mt-4">
+          <nav className="flex flex-col gap-2 px-3">
+            {menuItems.map((item) => {
+              const isActive = location.pathname === item.path;
+              
+              return (
+                <Link 
+                  key={item.name}
+                  to={item.path} 
+                  title={!isExpanded ? item.name : ""} // যখন ছোট থাকবে তখন হোভার করলে নাম দেখাবে
+                  className={`flex items-center rounded-lg transition-colors overflow-hidden
+                    ${isExpanded ? 'px-4 py-3 justify-start' : 'p-3 justify-center'}
+                    ${isActive 
+                      ? 'bg-[#E3EAF7] text-[#0A2647] font-semibold' // আপনার ছবির মতো হালকা নীল অ্যাক্টিভ কালার
+                      : 'text-gray-500 hover:bg-gray-100 hover:text-gray-800'
+                    }
+                  `}
+                >
+                  {/* আইকন */}
+                  <svg className="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    {item.icon}
+                  </svg>
+                  
+                  {/* টেক্সট (শুধুমাত্র যখন isExpanded = true হবে তখন দেখাবে) */}
+                  <span 
+                    className={`ml-4 whitespace-nowrap transition-opacity duration-300
+                      ${isExpanded ? 'opacity-100' : 'opacity-0 hidden'}
+                    `}
+                  >
+                    {item.name}
+                  </span>
+                </Link>
+              );
+            })}
+          </nav>
         </div>
-
-        {/* User Profile */}
-        <div className="p-4 border-t border-gray-200/60 flex items-center justify-between bg-[#F9F7F4] shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-gray-200 border border-gray-300 overflow-hidden shrink-0">
-              <img src={`https://ui-avatars.com/api/?name=${currentUser || 'Admin'}&background=9A4D2E&color=fff`} alt="User" />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-xs font-bold text-gray-900 truncate max-w-[120px]">{currentUser || 'Administrator'}</span>
-              <span className="text-[9px] font-bold text-gray-500 uppercase tracking-wider">Super Admin</span>
-            </div>
-          </div>
-          <button onClick={handleLogout} className="text-gray-400 hover:text-red-500 transition"><LogOut size={16} /></button>
+        
+        {/* লগআউট বাটন (নিচে) */}
+        <div className="p-3 border-t border-gray-200">
+          <button onClick={handleLogout}
+            title={!isExpanded ? "Logout" : ""}
+            className={`w-full flex items-center text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors rounded-lg
+              ${isExpanded ? 'px-4 py-3 justify-start' : 'p-3 justify-center'}
+            `}
+          >
+            <svg className="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+            </svg>
+            <span className={`ml-4 font-semibold whitespace-nowrap transition-opacity duration-300 ${isExpanded ? 'opacity-100' : 'opacity-0 hidden'}`}>
+              Logout
+            </span>
+          </button>
         </div>
       </aside>
 
-      {/* ================= RIGHT MAIN AREA ================= */}
-      <div className="flex-1 flex flex-col h-screen overflow-hidden relative">
+      
 
-        <TopHeader currentUser={currentUser} />
-
-        <main className="flex-1 flex flex-col overflow-hidden bg-white">
-
-          <div className="bg-white px-6 py-4 flex items-center justify-between border-b border-gray-200 shrink-0 z-10">
-            <div className="flex items-center gap-4">
-              <button className="p-1.5 text-gray-400 hover:text-gray-800 hover:bg-gray-100 rounded border border-transparent hover:border-gray-200 transition"><ChevronLeft size={18} /></button>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-[15px] font-black uppercase text-gray-900 tracking-wider capitalize">{activeTab === 'saved' ? 'Document Database' : `${docType} BUILDER`}</h2>
-                  {activeTab === 'builder' && <span className="bg-orange-50 border border-orange-200 text-[#9A4D2E] text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest shadow-sm">Enterprise Edition</span>}
-                </div>
-                <p className="text-[9px] text-gray-400 uppercase tracking-widest font-bold mt-1">Theme-Aware Document Synthesis Engine</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              {activeTab === 'builder' && (
-                <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md text-xs font-bold text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition shadow-sm bg-white">
-                  <RefreshCw size={14} /> Synchronize
-                </button>
-              )}
-
-              {/* Export PDF Button (with loading state) */}
-              <button
-                onClick={downloadPDF}
-                disabled={isGenerating}
-                className={`flex items-center gap-2 px-4 py-2 border border-orange-200 rounded-md text-xs font-bold transition shadow-sm ${isGenerating ? 'bg-orange-100 text-orange-400 cursor-not-allowed' : 'bg-orange-50/50 text-[#9A4D2E] hover:bg-orange-50'}`}
-              >
-                {isGenerating ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
-                {isGenerating ? 'Exporting...' : 'Export High-Res'}
-              </button>
-
-              {activeTab === 'builder' && (
-                <button onClick={handleSaveDocument} className="flex items-center gap-2 px-5 py-2 bg-[#9A4D2E] text-white rounded-md text-xs font-bold hover:bg-[#7A3D24] transition shadow-md hover:shadow-lg">
-                  <Cloud size={14} /> Save to Cloud
-                </button>
-              )}
+      {/* ========================================== */}
+      {/* ২. ডানদিকের মূল অংশ (Top Header + Content) */}
+      {/* ========================================== */}
+      <div className="flex-1 flex flex-col h-screen overflow-hidden w-full">
+        
+        {/* টপ হেডার (Top Bar) */}
+        <header className="bg-white shadow-sm h-16 flex items-center justify-between px-6 z-10 border-b border-gray-200 shrink-0">
+          
+          <div className="flex items-center gap-4">
+            {/* মেনু টগল বাটন */}
+            <button 
+              onClick={() => setIsExpanded(!isExpanded)} 
+              className="p-2 text-gray-500 rounded-md hover:bg-gray-100 transition-colors focus:outline-none"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
+              </svg>
+            </button>
+            
+            {/* টপ লোগো */}
+            <div className="flex items-center gap-2 cursor-pointer ml-2">
+              <div className="w-8 h-8 bg-[#0A2647] text-white rounded flex items-center justify-center font-bold text-xl">D</div>
+              <h2 className="text-2xl font-extrabold text-gray-800 tracking-tight">Docu<span className="text-blue-600">Craft</span></h2>
             </div>
           </div>
 
-          {/* SPLIT AREA: Configuration Panel + PDF Preview */}
-          <div className="flex-1 flex overflow-hidden">
-
-            {/* INNER SETTINGS SIDEBAR */}
-            <div className="w-[360px] bg-white border-r border-gray-200 overflow-y-auto flex flex-col shrink-0 custom-scrollbar z-0 relative">
-              <div className="p-4 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-20 shadow-sm shrink-0">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 bg-orange-50 border border-orange-100 text-[#9A4D2E] rounded flex items-center justify-center shrink-0 shadow-inner">
-                    {activeTab === 'saved' ? <FolderArchive size={18} /> : <Settings size={18} />}
-                  </div>
-                  <div>
-                    <h3 className="text-[12px] font-black text-gray-900 uppercase tracking-wider">{activeTab === 'saved' ? 'Saved History' : 'Registry Architect'}</h3>
-                    <p className="text-[8px] text-gray-400 uppercase tracking-widest font-bold mt-0.5">{activeTab === 'saved' ? 'Manage your documents' : 'Visual Configuration Engine'}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex-1 relative">
-                <Sidebar activeTab={activeTab} theme={theme} appState={appState} appSetters={appSetters} actions={actions} themes={themes} savedDocs={savedDocs} loadDocument={loadDocument} deleteDocument={deleteDocument} calculated={calculated} />
-              </div>
+          {/* ডান দিক: ইউজার প্রোফাইল */}
+          <div className="flex items-center gap-3">
+            <div className="text-right hidden sm:block">
+              <p className="text-sm font-bold text-gray-700">Admin User</p>
+              <p className="text-xs text-gray-500">admin@company.com</p>
             </div>
-
-            {/* PDF PREVIEW AREA */}
-            <div className="flex-1 bg-[#FDFBF7] relative overflow-hidden flex flex-col shadow-inner">
-              <div className="absolute top-5 right-8 bg-white border border-green-200 text-green-700 text-[9px] font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm z-20 tracking-wider uppercase">
-                <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> Live Visual Engine
-              </div>
-              <Outlet context={{ pdfRef, theme, appState, calculated }} />
+            <div className="h-10 w-10 bg-gray-200 rounded-full border-2 border-[#0A2647] overflow-hidden cursor-pointer shadow-sm">
+              <img src="https://ui-avatars.com/api/?name=Admin+User&background=0A2647&color=fff" alt="User" className="w-full h-full object-cover" />
             </div>
-
           </div>
+        </header>
+
+        {/* মেইন কন্টেন্ট এরিয়া */}
+        <main className="flex-1 overflow-y-auto bg-[#0F172A] relative">
+          <Outlet /> 
         </main>
 
       </div>
