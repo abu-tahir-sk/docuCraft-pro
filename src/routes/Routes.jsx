@@ -20,6 +20,7 @@ import SavedDocuments from "../pages/SavedDocuments";
 import Settings from "../pages/Settings";
 import DocumentPage from "../pages/Documents/DocumentPage";
 import DocumentEditor from "../components/DocumentEditor";
+import ViewPdf from "../pages/ViewPdf";
 
 export const router = createBrowserRouter([
 
@@ -35,11 +36,11 @@ export const router = createBrowserRouter([
         index: true,
         element: <DashboardHome />,
       },
+      // {
+      //   path: "documents",
+      //   element: <DocumentPage />,
+      // },
       {
-        path: "documents",
-        element: <DocumentPage />,
-      },
-     {
         path: "invoice",
         element: <DocumentEditor key="invoice" docType="invoice" />,
       },
@@ -56,6 +57,16 @@ export const router = createBrowserRouter([
         path: "saved-documents",
         element: <SavedDocuments />,
       },
+      {
+        path: "view-pdf/:id",
+        element: <ViewPdf />,
+      },
+      {
+        path: "edit-document/:id",
+        element: <DocumentEditor />, 
+      },
+
+
       // {
       //   path: "clients",
       //   element: <Clients />,
@@ -70,6 +81,7 @@ export const router = createBrowserRouter([
       },
     ],
   },
+
   {
     path: "/",
     element: <Home />,
@@ -101,6 +113,8 @@ export const router = createBrowserRouter([
   {
     path: "/reset-password/:token",
     element: <ResetPassword />,
-  }
+  },
+
+
 
 ]);
