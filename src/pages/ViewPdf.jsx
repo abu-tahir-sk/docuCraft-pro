@@ -16,11 +16,11 @@ const ViewPdf = () => {
     const fetchDoc = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`http://localhost:5000/api/documents/${id}`, { withCredentials: true });
+        const res = await axios.get(`https://docu-craft-server.vercel.app/api/documents/${id}`, { withCredentials: true });
         setDoc(res.data);
         setLoading(false);
       } catch (err) {
-      
+
         setLoading(false);
       }
     };

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { User, Mail,  Loader2, ArrowRight } from "lucide-react";
+import { User, Mail, Loader2, ArrowRight } from "lucide-react";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -10,19 +10,19 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
 
 
- 
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-   
+
 
     setLoading(true);
     try {
 
-      await axios.post("http://localhost:5000/api/auth/register", {
-  name: form.name,
-  email: form.email,
-});
+      await axios.post("https://docu-craft-server.vercel.app/api/auth/register", {
+        name: form.name,
+        email: form.email,
+      });
       toast.success("Registration successful! An OTP has been sent to your email");
       navigate("/verify-email", { state: { email: form.email } });
     } catch (err) {
@@ -41,7 +41,7 @@ const Register = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-         
+
 
           {/* ইনপুট ফিল্ডস */}
           <div className="relative">
@@ -54,7 +54,7 @@ const Register = () => {
             <input type="email" placeholder="Email Address" onChange={(e) => setForm({ ...form, email: e.target.value })} className="w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" required />
           </div>
 
-          <button  className="w-full py-3.5 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all flex justify-center items-center gap-2">
+          <button className="w-full py-3.5 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all flex justify-center items-center gap-2">
             {loading ? <Loader2 className="animate-spin" /> : <>Register <ArrowRight size={18} /></>}
           </button>
         </form>

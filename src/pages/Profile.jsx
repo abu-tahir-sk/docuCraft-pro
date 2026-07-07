@@ -13,7 +13,7 @@ const Profile = () => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/auth/me', {
+        const response = await axios.get('https://docu-craft-server.vercel.app/api/auth/me', {
           withCredentials: true,
         });
 
@@ -21,7 +21,7 @@ const Profile = () => {
           setUser(response.data.user);
         }
       } catch (err) {
-         toast.error("Profile fetch error:", err);
+        toast.error("Profile fetch error:", err);
         setError("Failed to load profile. Please login again.");
       } finally {
         setLoading(false);
@@ -57,8 +57,8 @@ const Profile = () => {
 
   if (!user) return null;
 
-  
-  const Image =`https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'User')}&background=0A2647&color=fff&size=128`;
+
+  const Image = `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'User')}&background=0A2647&color=fff&size=128`;
 
   return (
     <div className="w-full max-w-4xl mx-auto mt-10 p-8 sm:p-10 bg-white dark:bg-gray-900 rounded-[2rem] shadow-xl border border-gray-100 dark:border-gray-800 transition-colors duration-300">
