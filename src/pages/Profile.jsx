@@ -1,26 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
-import { User, Mail, Shield, Loader2, AlertCircle } from 'lucide-react'; 
+import { User, Mail, Shield, Loader2, AlertCircle } from 'lucide-react';
+import { toast } from 'react-toastify';
 
 const Profile = () => {
   const { user, setUser } = useAuth();
-  
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const response = await axios.get('https://docu-craft-server.vercel.app/api/auth/me', {
-          withCredentials: true, 
+        const response = await axios.get('http://localhost:5000/api/auth/me', {
+          withCredentials: true,
         });
 
         if (response.data.success) {
           setUser(response.data.user);
         }
       } catch (err) {
-        console.error("Profile fetch error:", err);
+         toast.error("Profile fetch error:", err);
         setError("Failed to load profile. Please login again.");
       } finally {
         setLoading(false);
@@ -56,19 +57,19 @@ const Profile = () => {
 
   if (!user) return null;
 
-  // ইউজার ছবি (যদি ডাটাবেসে profileImage থাকে সেটা নেবে, নাহলে নামের অক্ষর দিয়ে বানাবে)
-  const profileImage = user.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'User')}&background=0A2647&color=fff&size=128`;
+  
+  const Image =`https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'User')}&background=0A2647&color=fff&size=128`;
 
   return (
     <div className="w-full max-w-4xl mx-auto mt-10 p-8 sm:p-10 bg-white dark:bg-gray-900 rounded-[2rem] shadow-xl border border-gray-100 dark:border-gray-800 transition-colors duration-300">
-      
+
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-10 border-b border-gray-100 dark:border-gray-800 pb-8 text-center sm:text-left">
         <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-white dark:border-gray-800 shadow-xl overflow-hidden flex-shrink-0 bg-[#0A2647] dark:bg-blue-600">
-          <img 
-            src={profileImage} 
-            alt="User Profile" 
-            className="w-full h-full object-cover" 
+          <img
+            src={Image}
+            alt="User Profile"
+            className="w-full h-full object-cover"
           />
         </div>
         <div className="mt-2 sm:mt-5">
@@ -79,7 +80,7 @@ const Profile = () => {
 
       {/* Info Cards */}
       <div className="space-y-4">
-        
+
         {/* Name Field */}
         <div className="flex items-center gap-5 p-5 bg-gray-50 dark:bg-gray-800/40 border border-transparent dark:border-gray-800 rounded-2xl hover:border-blue-100 dark:hover:border-blue-900/50 transition-colors group">
           <div className="w-12 h-12 rounded-xl bg-white dark:bg-gray-800 shadow-sm flex items-center justify-center text-blue-600 dark:text-blue-400 flex-shrink-0 group-hover:scale-110 transition-transform">

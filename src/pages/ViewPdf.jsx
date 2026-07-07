@@ -16,11 +16,11 @@ const ViewPdf = () => {
     const fetchDoc = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`https://docu-craft-server.vercel.app/api/documents/${id}`, { withCredentials: true });
+        const res = await axios.get(`http://localhost:5000/api/documents/${id}`, { withCredentials: true });
         setDoc(res.data);
         setLoading(false);
       } catch (err) {
-        console.error("Error loading document:", err);
+      
         setLoading(false);
       }
     };
@@ -29,24 +29,24 @@ const ViewPdf = () => {
 
   const handleDownload = async () => {
 
-  const element = document.getElementById("pdf-content");
+    const element = document.getElementById("pdf-content");
 
-  const canvas = await html2canvas(element, {
-    scale: 2,
-    useCORS: true,
-  });
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+    });
 
-  const imgData = canvas.toDataURL("image/png");
+    const imgData = canvas.toDataURL("image/png");
 
-  const pdf = new jsPDF("p", "mm", "a4");
+    const pdf = new jsPDF("p", "mm", "a4");
 
-  const pdfWidth = 210;
-  const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+    const pdfWidth = 210;
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
-  pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
 
-  pdf.save(`${docMeta.number}.pdf`);
-};
+    pdf.save(`${docMeta.number}.pdf`);
+  };
 
   if (loading) return <div className="text-center mt-10">Loading Document...</div>;
   if (!doc) return <div className="text-center mt-10 text-red-500">Document not found!</div>;
@@ -73,15 +73,15 @@ const ViewPdf = () => {
 
       return (
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-          <div 
+          <div
             className="absolute top-1/2 left-1/2"
-            style={{ 
+            style={{
               width: '300%', height: '300%', opacity: opacity,
               transform: 'translate(-50%, -50%) rotate(-35deg)',
               backgroundImage: `url("data:image/svg+xml,${encodeURIComponent(svg)}")`,
               backgroundRepeat: 'repeat',
               backgroundPosition: 'center'
-            }} 
+            }}
           />
         </div>
       );
@@ -131,7 +131,7 @@ const ViewPdf = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-8 font-sans">
-      
+
       {/* Top Action Bar */}
       <div className="no-print flex justify-between items-center mb-6 max-w-[210mm] mx-auto">
         <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-600 hover:text-black transition font-semibold">
@@ -144,36 +144,36 @@ const ViewPdf = () => {
 
       {/* Perfect A4 Wrapper */}
       <div className="flex justify-center items-start overflow-x-auto pb-10">
-        <div 
+        <div
           className="bg-white w-[210mm] min-h-[297mm] text-black shadow-2xl relative overflow-hidden mx-auto print:shadow-none print:w-full print:min-h-0 print:m-0"
           style={{ backgroundColor: docMeta?.paperColor || '#FFFFFF' }}
         >
-          
+
           {/* নতুন পারফেক্ট ওয়াটারমার্ক লেয়ারটি এখানে দেওয়া হলো */}
           {renderWatermarkLayer()}
 
           {/* DocumentLayout-কে relative z-10 দিয়ে মোড়ানো হয়েছে যাতে ডিজাইন না ভাঙে */}
           <div id="pdf-content" className="relative z-10 h-full w-full ">
             <DocumentLayout
-                docType={doc.docType}
-                company={doc.data?.company || {}}
-                client={doc.data?.client || {}}
-                docMeta={{
-                    ...doc.data?.docMeta,
-                    number: doc.docNumber
-                }}
-                items={doc.data?.items || []}
-                clauses={doc.data?.clauses || []}
-                terms={doc.data?.terms || {}}
-                financials={doc.data?.financials || {}} // Financials ডেটা পাঠানো হলো
-                centerLogo={doc.data?.centerLogo}
-                // এখানে wmMode পাঠানো হয়নি, যাতে ভেতরের পুরোনো ভাঙা ওয়াটারমার্কটি আর কাজ না করে
+              docType={doc.docType}
+              company={doc.data?.company || {}}
+              client={doc.data?.client || {}}
+              docMeta={{
+                ...doc.data?.docMeta,
+                number: doc.docNumber
+              }}
+              items={doc.data?.items || []}
+              clauses={doc.data?.clauses || []}
+              terms={doc.data?.terms || {}}
+              financials={doc.data?.financials || {}} // Financials ডেটা পাঠানো হলো
+              centerLogo={doc.data?.centerLogo}
+            // এখানে wmMode পাঠানো হয়নি, যাতে ভেতরের পুরোনো ভাঙা ওয়াটারমার্কটি আর কাজ না করে
             />
           </div>
 
         </div>
       </div>
-      
+
     </div>
   );
 };

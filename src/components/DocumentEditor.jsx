@@ -38,7 +38,7 @@ const DocumentEditor = ({ docType: propDocType }) => {
   }, [propDocType]);
 
   const tabs = ['Company', 'Client', 'Details', docType === 'agreement' ? 'Clauses' : 'Items', 'Terms', 'Branding'];
-  
+
   const [activeTab, setActiveTab] = useState(() => {
     return localStorage.getItem('docucraft_active_tab') || 'company';
   });
@@ -102,7 +102,7 @@ const DocumentEditor = ({ docType: propDocType }) => {
   const loadDocument = async () => {
     try {
       const res = await axios.get(
-        `https://docu-craft-server.vercel.app/api/documents/${id}`,
+        `http://localhost:5000/api/documents/${id}`,
         { withCredentials: true }
       );
       const doc = res.data;
@@ -168,7 +168,7 @@ const DocumentEditor = ({ docType: propDocType }) => {
     formData.append("image", file);
     try {
       const res = await axios.post(
-        "https://docu-craft-server.vercel.app/api/upload/image",
+        "http://localhost:5000/api/upload/image",
         formData,
         { headers: { "Content-Type": "multipart/form-data" }, withCredentials: true }
       );
@@ -213,12 +213,12 @@ const DocumentEditor = ({ docType: propDocType }) => {
             wmMode, wmText, wmLogo, wmIntensity, wmSpacing, wmSpread, centerLogo
           },
         };
-        await axios.post("https://docu-craft-server.vercel.app/api/documents/save", docData, {
+        await axios.post("http://localhost:5000/api/documents/save", docData, {
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
         });
       } catch (err) {
-        console.error("Auto-save failed", err);
+         toast.error("Auto-save failed:", err);
       }
     }, 30000);
     return () => clearTimeout(autoSaveTimer);
@@ -239,7 +239,7 @@ const DocumentEditor = ({ docType: propDocType }) => {
       };
       if (isEditMode) {
         await axios.put(
-          `https://docu-craft-server.vercel.app/api/documents/update/${id}`,
+          `http://localhost:5000/api/documents/update/${id}`,
           docData,
           { withCredentials: true }
         );
@@ -247,7 +247,7 @@ const DocumentEditor = ({ docType: propDocType }) => {
         setIsEditMode(false);
       } else {
         await axios.post(
-          "https://docu-craft-server.vercel.app/api/documents/save",
+          "http://localhost:5000/api/documents/save",
           docData,
           { withCredentials: true }
         );
@@ -264,7 +264,7 @@ const DocumentEditor = ({ docType: propDocType }) => {
     if (wmMode === 'disabled') return null;
     const opacity = wmIntensity / 100;
     const wmColor = '#d1d5db';
-    
+
     if (wmMode === 'text_tiling' && wmText) {
       const fontSize = Math.max(12, Number(wmSpacing) / 4);
       const gap = Number(wmSpread) * 2;
@@ -308,8 +308,8 @@ const DocumentEditor = ({ docType: propDocType }) => {
       );
     }
     if (wmMode === 'logo_tiling' && wmLogo) {
-      const imgSize = Math.max(20, Number(wmSpacing) / 4); 
-      const gap = Number(wmSpread); 
+      const imgSize = Math.max(20, Number(wmSpacing) / 4);
+      const gap = Number(wmSpread);
       const containerSize = 2200;
       const itemSize = imgSize + gap;
       const cols = Math.ceil(containerSize / itemSize);
@@ -350,10 +350,10 @@ const DocumentEditor = ({ docType: propDocType }) => {
 
   return (
     <div className="flex gap-4 h-full bg-gray-100 dark:bg-gray-950 p-4 font-sans transition-colors duration-300">
-      
+
       {/* ================= LEFT: CONTROL PANEL ================= */}
       <div className="w-[450px] bg-white dark:bg-gray-900 border border-transparent dark:border-gray-800 rounded-xl shadow-lg flex flex-col overflow-hidden transition-colors duration-300">
-        
+
         <div className="flex overflow-x-auto bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-800 p-2 gap-2 hide-scrollbar shrink-0">
           {tabs.map(tab => (
             <button
@@ -367,14 +367,14 @@ const DocumentEditor = ({ docType: propDocType }) => {
         </div>
 
         <div className="flex-1 overflow-y-auto p-6 bg-[#FCFAF8] dark:bg-gray-900 transition-colors duration-300">
-          
+
           {/* ================= COMPANY TAB ================= */}
           {activeTab === 'company' && (
             <div className="space-y-4">
               <div><label className="text-xs text-gray-500 dark:text-gray-400 font-bold">Company Name</label><input type="text" value={company.name} onChange={(e) => setCompany({ ...company, name: e.target.value })} className="w-full p-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded text-sm outline-none focus:border-blue-500" /></div>
               <div><label className="text-xs text-gray-500 dark:text-gray-400 font-bold">GST/VAT Number</label><input type="text" value={company.gst} onChange={(e) => setCompany({ ...company, gst: e.target.value })} className="w-full p-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded text-sm outline-none focus:border-blue-500" /></div>
               <div><label className="text-xs text-gray-500 dark:text-gray-400 font-bold">Address</label><textarea value={company.address} onChange={(e) => setCompany({ ...company, address: e.target.value })} className="w-full p-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded text-sm h-20 outline-none focus:border-blue-500" /></div>
-              
+
               <div className="grid grid-cols-3 gap-3 pt-3 border-t border-gray-200 dark:border-gray-800">
                 <div className="flex flex-col">
                   <label className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase mb-1">Company Logo</label>
@@ -513,9 +513,9 @@ const DocumentEditor = ({ docType: propDocType }) => {
                   </div>
                   <ChevronUp size={18} className="text-gray-500 dark:text-gray-400" />
                 </div>
-                
+
                 <div className="p-6 space-y-8 bg-[#FCFAF8] dark:bg-gray-900">
-                  
+
                   {/* Theme Colors */}
                   <div className="flex gap-4">
                     <div className="flex-1">
@@ -588,7 +588,7 @@ const DocumentEditor = ({ docType: propDocType }) => {
                   {/* Dynamic Sliders */}
                   {wmMode !== 'disabled' && (
                     <div className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm space-y-6">
-                      
+
                       {wmMode.includes('text') && (
                         <div>
                           <label className="block text-[10px] font-black text-gray-500 dark:text-gray-400 tracking-widest mb-2 uppercase">Watermark Text</label>
@@ -600,7 +600,7 @@ const DocumentEditor = ({ docType: propDocType }) => {
                           />
                         </div>
                       )}
-                      
+
                       {wmMode.includes('logo') && (
                         <div>
                           <label className="block text-[10px] font-black text-gray-500 dark:text-gray-400 tracking-wider mb-2 uppercase">Watermark Logo</label>
@@ -669,7 +669,7 @@ const DocumentEditor = ({ docType: propDocType }) => {
 
       {/* ================= RIGHT: LIVE PDF PREVIEW ================= */}
       <div className="flex-1 bg-gray-300 dark:bg-gray-800 flex justify-center items-start rounded-xl overflow-y-auto p-8 shadow-inner transition-colors duration-300">
-        
+
         {/* ================= PDF PAPER (এটি সব সময় লাইট/সাদা থাকবে) ================= */}
         <div
           ref={pdfRef}

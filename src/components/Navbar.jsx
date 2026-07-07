@@ -5,6 +5,7 @@ import { FiSun, FiMoon } from 'react-icons/fi';
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import { useAuth } from '../context/AuthContext';
+import { toast } from 'react-toastify';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -20,7 +21,7 @@ const  { user } = useAuth();
 
       navigate("/login");
     } catch (error) {
-      console.error(error);
+       toast.error(error);
     }
   };
 

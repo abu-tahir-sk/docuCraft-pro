@@ -10,9 +10,9 @@ const Login = () => {
   const [otp, setOtp] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
-  
+
   // Timer for Resend OTP
-  const [timer, setTimer] = useState(0); 
+  const [timer, setTimer] = useState(0);
 
   const navigate = useNavigate();
   const { setUser } = useAuth(); // AuthContext থেকে setUser নিয়েছি
@@ -43,15 +43,15 @@ const Login = () => {
     const toastId = toast.loading("Sending OTP to your email...");
 
     try {
-      const res = await axios.post("https://docu-craft-server.vercel.app/api/auth/login", { email });
-      
+      const res = await axios.post("http://localhost:5000/api/auth/login", { email });
+
       if (res.data.success) {
         toast.success(res.data.message, { id: toastId });
         setStep(2);
         setTimer(60); // 60 সেকেন্ডের টাইমার শুরু হবে
       }
     } catch (error) {
-      console.error(error);
+       toast.error(error);
       const errorMsg = error.response?.data?.message || "Server connection failed. Is backend running?";
       toast.error(errorMsg, { id: toastId });
     } finally {
@@ -71,21 +71,21 @@ const Login = () => {
 
     try {
       const res = await axios.post(
-        "https://docu-craft-server.vercel.app/api/auth/verify-login", 
+        "http://localhost:5000/api/auth/verify-login",
         { email, otp, rememberMe },
-        { withCredentials: true } 
+        { withCredentials: true }
       );
-      
+
       if (res.data.success) {
-        toast.success("Welcome back! Login Successful 🎉", { id: toastId });
+        toast.success("Welcome back! Login Successful ", { id: toastId });
         setUser(res.data.user); // Context আপডেট 
-        
+
         setTimeout(() => {
           navigate("/dashboard");
         }, 1000);
       }
     } catch (error) {
-      console.error(error);
+      toast.error(error);
       const errorMsg = error.response?.data?.message || "Invalid OTP code. Please try again.";
       toast.error(errorMsg, { id: toastId });
       setLoading(false); // শুধুমাত্র এরর আসলেই লোডিং বন্ধ হবে
@@ -100,8 +100,8 @@ const Login = () => {
 
     const toastId = toast.loading("Resending OTP...");
     try {
-      const res = await axios.post("https://docu-craft-server.vercel.app/api/auth/resend-login-otp", { email });
-      
+      const res = await axios.post("http://localhost:5000/api/auth/resend-login-otp", { email });
+
       if (res.data.success) {
         toast.success("New OTP sent to your email!", { id: toastId });
         setOtp(""); // আগের OTP ক্লিয়ার করে দিলাম
@@ -115,13 +115,13 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0F172A] to-[#1E293B] py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      
+
       <div className="absolute top-0 left-0 w-72 h-72 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
       <div className="absolute top-0 right-0 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
       <div className="absolute -bottom-8 left-20 w-72 h-72 bg-teal-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
 
       <div className="max-w-md w-full bg-white rounded-[2rem] shadow-2xl overflow-hidden z-10 transform transition-all">
-        
+
         <div className="bg-gray-50 pt-10 pb-6 px-10 text-center border-b border-gray-100">
           <div className="flex justify-center items-center gap-2 mb-4">
             <div className="w-10 h-10 bg-[#0A2647] text-white rounded-xl flex items-center justify-center font-bold text-2xl shadow-lg">D</div>
@@ -133,8 +133,8 @@ const Login = () => {
             {step === 1 ? "Welcome Back!" : "Security Verification"}
           </h3>
           <p className="text-sm text-gray-500 mt-1">
-            {step === 1 
-              ? "Sign in to manage your professional documents." 
+            {step === 1
+              ? "Sign in to manage your professional documents."
               : <span>We've sent a 6-digit code to <b className="text-gray-700">{email}</b></span>
             }
           </p>
@@ -227,18 +227,18 @@ const Login = () => {
                   "Secure Login"
                 )}
               </button>
-              
+
               {/* =======================
                   Resend OTP & Change Email
                   ======================= */}
               <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-100">
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => {
                     setStep(1);
                     setOtp("");
                     setTimer(0);
-                  }} 
+                  }}
                   className="text-sm font-bold text-gray-500 hover:text-blue-600 transition-colors"
                 >
                   ← Change Email
@@ -248,11 +248,10 @@ const Login = () => {
                   type="button"
                   onClick={handleResendOTP}
                   disabled={timer > 0}
-                  className={`text-sm font-bold transition-colors ${
-                    timer > 0 
-                      ? "text-gray-400 cursor-not-allowed" 
+                  className={`text-sm font-bold transition-colors ${timer > 0
+                      ? "text-gray-400 cursor-not-allowed"
                       : "text-blue-600 hover:text-blue-800"
-                  }`}
+                    }`}
                 >
                   {timer > 0 ? `Resend OTP in ${timer}s` : "Resend OTP"}
                 </button>
@@ -270,8 +269,8 @@ const Login = () => {
           </div>
         </div>
       </div>
-      
-    
+
+
     </div>
   );
 };

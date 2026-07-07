@@ -12,7 +12,7 @@ const SettingsThemes = ({ appState, appSetters, themes }) => {
     formData.append("image", file);
 
     const res = await axios.post(
-      "https://docu-craft-server.vercel.app/api/upload/image",
+      "http://localhost:5000/api/upload/image",
       formData,
       {
         headers: {
@@ -66,7 +66,7 @@ const SettingsThemes = ({ appState, appSetters, themes }) => {
             <div className="flex items-center gap-2">
               <label className="flex items-center gap-1 bg-gray-100 px-3 py-1.5 rounded cursor-pointer text-xs hover:bg-gray-200 border">
                 <Upload size={12} /> Upload Logo
-                <input  type="file"
+                <input type="file"
 
                   onChange={(e) => uploadLogo(e.target.files[0])} className="hidden" />
               </label>

@@ -16,6 +16,7 @@ import {
   LogOut,
   ChevronDown,
 } from "lucide-react";
+import { toast } from "react-toastify";
 
 export default function Sidebar() {
   const [openDocs, setOpenDocs] = useState(true);
@@ -38,7 +39,7 @@ export default function Sidebar() {
 
       navigate("/login");
     } catch (error) {
-      console.error(error);
+     toast.error(error);
     }
   };
 
