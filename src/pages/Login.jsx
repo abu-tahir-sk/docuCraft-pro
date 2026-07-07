@@ -43,7 +43,7 @@ const Login = () => {
     const toastId = toast.loading("Sending OTP to your email...");
 
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", { email });
+      const res = await axios.post("https://docu-craft-server.vercel.app/api/auth/login", { email });
 
       if (res.data.success) {
         toast.success(res.data.message, { id: toastId });
@@ -71,7 +71,7 @@ const Login = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/auth/verify-login",
+        "https://docu-craft-server.vercel.app/api/auth/verify-login",
         { email, otp, rememberMe },
         { withCredentials: true }
       );
@@ -100,7 +100,7 @@ const Login = () => {
 
     const toastId = toast.loading("Resending OTP...");
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/resend-login-otp", { email });
+      const res = await axios.post("https://docu-craft-server.vercel.app/api/auth/resend-login-otp", { email });
 
       if (res.data.success) {
         toast.success("New OTP sent to your email!", { id: toastId });

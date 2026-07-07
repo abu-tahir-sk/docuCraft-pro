@@ -13,7 +13,7 @@ const SavedDocuments = () => {
   useEffect(() => {
     const fetchDocuments = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/documents/my-documents', {
+        const response = await axios.get('https://docu-craft-server.vercel.app/api/documents/my-documents', {
           withCredentials: true
         });
         setDocuments(response.data);
@@ -35,7 +35,7 @@ const SavedDocuments = () => {
     const loadingToast = toast.loading("Deleting document...");
 
     try {
-      await axios.delete(`http://localhost:5000/api/documents/delete/${id}`, {
+      await axios.delete(`https://docu-craft-server.vercel.app/api/documents/delete/${id}`, {
         withCredentials: true
       });
 

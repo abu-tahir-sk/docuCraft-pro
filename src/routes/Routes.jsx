@@ -2,21 +2,12 @@ import { createBrowserRouter } from "react-router-dom";
 
 import Home from "../pages/Home";
 import Login from "../pages/Login";
-
-
-
-
 import DashboardLayout from "../DashboardLayout/DashboardLayout";
-
-
 import PrivateRoute from "./PrivateRoute";
 import Register from "../pages/Register";
 import VerifyEmail from "../pages/VerifyEmail";
-
 import DashboardHome from "../pages/DashboardHome";
 import SavedDocuments from "../pages/SavedDocuments";
-
-import DocumentPage from "../pages/Documents/DocumentPage";
 import DocumentEditor from "../components/DocumentEditor";
 import ViewPdf from "../pages/ViewPdf";
 import Profile from "../pages/Profile";
