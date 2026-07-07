@@ -102,7 +102,7 @@ const DocumentEditor = ({ docType: propDocType }) => {
   const loadDocument = async () => {
     try {
       const res = await axios.get(
-        `https://docu-craft-server.vercel.app/api/documents/${id}`,
+        `http://localhost:5000/api/documents/${id}`,
         { withCredentials: true }
       );
       const doc = res.data;
@@ -168,7 +168,7 @@ const DocumentEditor = ({ docType: propDocType }) => {
     formData.append("image", file);
     try {
       const res = await axios.post(
-        "https://docu-craft-server.vercel.app/api/upload/image",
+        "http://localhost:5000/api/upload/image",
         formData,
         { headers: { "Content-Type": "multipart/form-data" }, withCredentials: true }
       );
@@ -213,7 +213,7 @@ const DocumentEditor = ({ docType: propDocType }) => {
             wmMode, wmText, wmLogo, wmIntensity, wmSpacing, wmSpread, centerLogo
           },
         };
-        await axios.post("https://docu-craft-server.vercel.app/api/documents/save", docData, {
+        await axios.post("http://localhost:5000/api/documents/save", docData, {
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -239,7 +239,7 @@ const DocumentEditor = ({ docType: propDocType }) => {
       };
       if (isEditMode) {
         await axios.put(
-          `https://docu-craft-server.vercel.app/api/documents/update/${id}`,
+          `http://localhost:5000/api/documents/update/${id}`,
           docData,
           { withCredentials: true }
         );
@@ -247,7 +247,7 @@ const DocumentEditor = ({ docType: propDocType }) => {
         setIsEditMode(false);
       } else {
         await axios.post(
-          "https://docu-craft-server.vercel.app/api/documents/save",
+          "http://localhost:5000/api/documents/save",
           docData,
           { withCredentials: true }
         );

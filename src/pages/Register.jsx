@@ -14,12 +14,11 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-
+    if (loading) return;
     setLoading(true);
     try {
 
-      await axios.post("https://docu-craft-server.vercel.app/api/auth/register", {
+      await axios.post("http://localhost:5000/api/auth/register", {
         name: form.name,
         email: form.email,
       });
@@ -54,7 +53,7 @@ const Register = () => {
             <input type="email" placeholder="Email Address" onChange={(e) => setForm({ ...form, email: e.target.value })} className="w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" required />
           </div>
 
-          <button className="w-full py-3.5 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all flex justify-center items-center gap-2">
+          <button disabled={loading} className="w-full py-3.5 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all flex justify-center items-center gap-2">
             {loading ? <Loader2 className="animate-spin" /> : <>Register <ArrowRight size={18} /></>}
           </button>
         </form>
