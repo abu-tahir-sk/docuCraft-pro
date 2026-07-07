@@ -25,14 +25,12 @@ export const AuthProvider = ({ children }) => {
 
     const res = await api.get("/auth/me");
 
-    console.log("ME API Response:", res.data);
+   
 
     setUser(res.data.user);
 
   } catch (error) {
-
-    console.log("ME API Error:", error.response?.data);
-
+    toast.error(error);
     setUser(null);
 
   }

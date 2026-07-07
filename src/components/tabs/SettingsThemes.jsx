@@ -12,7 +12,7 @@ const SettingsThemes = ({ appState, appSetters, themes }) => {
     formData.append("image", file);
 
     const res = await axios.post(
-      "http://localhost:5000/api/upload/image",
+      "https://docu-craft-server.vercel.app/api/upload/image",
       formData,
       {
         headers: {

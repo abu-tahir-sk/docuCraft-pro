@@ -1,20 +1,20 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-// import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import { FiPlayCircle, FiArrowRight } from 'react-icons/fi';
 
 export default function Hero() {
-//   const { user } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
-//   const handlePrimaryClick = () => {
-//     if (user) {
-//       navigate('/dashboard');
-//     } else {
-//       navigate('/login');
-//     }
-//   };
+  const handlePrimaryClick = () => {
+    if (user) {
+      navigate('/dashboard');
+    } else {
+      navigate('/login');
+    }
+  };
 
   return (
     <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden bg-gray-50 dark:bg-gray-900">
@@ -43,12 +43,11 @@ export default function Hero() {
             
             <div className="flex flex-col sm:flex-row gap-4">
               <button
-            //     onClick={handlePrimaryClick}
+                onClick={handlePrimaryClick}
                 className="flex items-center justify-center gap-2 bg-[#2563EB] hover:bg-[#4F46E5] text-white px-8 py-3.5 rounded-full font-semibold text-lg transition-all shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:-translate-y-0.5"
               >
-                {/* {user ? 'Go to Dashboard' : 'Start Free'}
-                <FiArrowRight /> */}
-                Go to Dashboard
+                {user ? 'Go to Dashboard' : 'Get Started'}
+                <FiArrowRight />
               </button>
               <button className="flex items-center justify-center gap-2 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 px-8 py-3.5 rounded-full font-semibold text-lg transition-all shadow-sm">
                 <FiPlayCircle className="text-xl" />
@@ -57,28 +56,26 @@ export default function Hero() {
             </div>
           </motion.div>
 
-          {/* Right Side - 3D Dashboard Mockup Presentation */}
+          {/* Right Side - Real Dashboard Image with Floating Cards */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             className="relative"
           >
-            {/* Main Mockup Card */}
+            {/* Main Mockup Card (With Image) */}
             <div className="relative rounded-2xl bg-white/40 dark:bg-gray-800/40 backdrop-blur-xl border border-white/50 dark:border-gray-700 p-2 shadow-2xl">
-              <div className="rounded-xl overflow-hidden bg-white dark:bg-gray-900 shadow-inner">
-                 {/* Dashboard UI Placeholder - Replaces actual image for code structure */}
-                 <div className="aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900 p-6 flex flex-col gap-4">
-                    {/* Header mock */}
-                    <div className="flex justify-between items-center mb-4">
-                      <div className="w-32 h-6 bg-gray-200 dark:bg-gray-700 rounded-md"></div>
-                      <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
-                    </div>
-                    {/* Chart mock */}
-                    <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 p-4">
-                      <div className="w-full h-full bg-gradient-to-t from-[#2563EB]/20 to-transparent rounded border-b-2 border-[#2563EB]"></div>
-                    </div>
-                 </div>
+              <div className="rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-900 shadow-inner flex items-center justify-center">
+                 
+                 {/* ========================================================= */}
+                 {/* Dashboard Image - আপনার আসল ড্যাশবোর্ডের ছবির লিংক এখানে দিন */}
+                 <img 
+                   src="/dashbord.png" 
+                   alt="DocuCraft Dashboard" 
+                   className="w-full h-auto object-cover rounded-lg"
+                 />
+                 {/* ========================================================= */}
+
               </div>
             </div>
 
@@ -86,7 +83,7 @@ export default function Hero() {
             <motion.div 
               animate={{ y: [0, -10, 0] }}
               transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-              className="absolute -left-12 top-10 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-4 rounded-xl shadow-xl border border-white/50 dark:border-gray-700"
+              className="absolute -left-12 top-10 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-4 rounded-xl shadow-xl border border-white/50 dark:border-gray-700 z-20"
             >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center font-bold">✓</div>
@@ -100,7 +97,7 @@ export default function Hero() {
             <motion.div 
               animate={{ y: [0, 15, 0] }}
               transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
-              className="absolute -right-8 bottom-20 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-4 rounded-xl shadow-xl border border-white/50 dark:border-gray-700"
+              className="absolute -right-8 bottom-20 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-4 rounded-xl shadow-xl border border-white/50 dark:border-gray-700 z-20"
             >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center font-bold">PDF</div>

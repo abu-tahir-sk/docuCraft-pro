@@ -13,10 +13,11 @@ const SavedDocuments = () => {
   useEffect(() => {
     const fetchDocuments = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/documents/my-documents', {
+        const response = await axios.get('https://docu-craft-server.vercel.app/api/documents/my-documents', {
           withCredentials: true
         });
         setDocuments(response.data);
+        
       } catch (error) {
         toast.error("Failed to load documents");
       }
@@ -25,39 +26,76 @@ const SavedDocuments = () => {
   }, []);
 
   // Document Delete korar function
-  const handleDelete = async (id) => {
-  if (window.confirm("Are you sure you want to delete this document?")) {
-    try {
-      // এখানে খেয়াল করুন 'withCredentials: true' যোগ করা হয়েছে
-      await axios.delete(`http://localhost:5000/api/documents/delete/${id}`, { 
-        withCredentials: true 
-      });
-      
-      setDocuments(documents.filter(doc => doc._id !== id));
-      toast.success("Deleted successfully!");
-    } catch (error) {
-      console.error("Delete error:", error.response || error);
-      toast.error("Unauthorized: Please login again.");
-    }
+  // ১. মূল ডিলিট ফাংশন (যেটি API কল করবে)
+const confirmDelete = async (id, toastId) => {
+  // প্রথমে কনফার্মেশন টোস্টটি বন্ধ করে দিবে
+  toast.dismiss(toastId);
+  
+  // ডিলিট হওয়ার সময় লোডিং দেখাবে
+  const loadingToast = toast.loading("Deleting document...");
+
+  try {
+    await axios.delete(`https://docu-craft-server.vercel.app/api/documents/delete/${id}`, { 
+      withCredentials: true 
+    });
+    
+    // স্টেট থেকে ডকুমেন্টটি রিমুভ করা
+    setDocuments(prevDocs => prevDocs.filter(doc => doc._id !== id));
+    
+    // লোডিং টোস্টটিকে সাকসেস টোস্টে পরিবর্তন করা
+    toast.success("Deleted successfully!", { id: loadingToast });
+  } catch (error) {
+    console.error("Delete error:", error.response || error);
+    const errorMessage = error.response?.data?.message || "Unauthorized: Please login again.";
+    
+    // লোডিং টোস্টটিকে এরর টোস্টে পরিবর্তন করা
+    toast.error(errorMessage, { id: loadingToast });
   }
+};
+
+// ২. কাস্টম কনফার্মেশন অ্যালার্ট ফাংশন (UI)
+const handleDelete = (id) => {
+  toast.custom((t) => (
+    <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} max-w-md w-full bg-white shadow-xl rounded-xl pointer-events-auto flex ring-1 ring-black ring-opacity-5 overflow-hidden`}>
+      <div className="flex-1 p-4">
+        <div className="flex items-start">
+          <div className="ml-3 flex-1">
+            <p className="text-sm font-extrabold text-gray-900">
+              Delete Document?
+            </p>
+            <p className="mt-1 text-xs text-gray-500 font-medium">
+              Are you sure you want to delete this document? This action cannot be undone.
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      <div className="flex flex-col border-l border-gray-200 bg-gray-50">
+        <button
+          onClick={() => confirmDelete(id, t.id)}
+          className="w-full flex-1 border-b border-gray-200 px-6 py-3 flex items-center justify-center text-xs font-bold text-red-600 hover:bg-red-100 transition-colors"
+        >
+          Yes, Delete
+        </button>
+        <button
+          onClick={() => toast.dismiss(t.id)}
+          className="w-full flex-1 px-6 py-3 flex items-center justify-center text-xs font-bold text-gray-600 hover:bg-gray-200 transition-colors"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  ), {
+    duration: Infinity, // যতক্ষণ না ইউজার কোনো বাটনে ক্লিক করছে, এটি স্ক্রিনে থাকবে
+  });
 };
 const handleViewPdf = (doc) => {
   
-  navigate(`/dashboard/view-pdf/${doc._id}`, );
+  navigate(`/dashboard/view-pdf/${doc._id}`, )
+  toast.success("Viewing PDF successfully!")
 };
 
-  // const handleDelete = async (id) => {
-  //   if (window.confirm("Are you sure you want to delete this document?")) {
-  //     try {
-  //       await axios.delete(`http://localhost:5000/api/documents/delete/${id}`, { withCredentials: true });
-  //       setDocuments(documents.filter(doc => doc._id !== id)); // লোকাল স্টেট থেকে রিমুভ
-  //       toast.success("Deleted successfully!");
-  //     } catch (error) {
-  //       toast.error("Failed to delete!");
-  //     }
-  //   }
-
-  // };
+  
 
   return (
     <div className="p-8 bg-gray-100 min-h-screen font-sans w-full">
@@ -126,11 +164,12 @@ const handleViewPdf = (doc) => {
                         View PDF
                       </button>
                       <button
-                        onClick={() => navigate(`/dashboard/edit-document/${doc._id}`)}
+                       onClick={() => navigate(`/dashboard/edit/${doc._id}`)}
                         className="text-blue-600 hover:text-blue-800 font-bold text-sm"
                       >
                         Edit
                       </button>
+                      
                       <button
                         onClick={() => handleDelete(doc._id)} // _id ব্যবহার করবেন
                         className="text-red-500 hover:text-red-700 font-bold text-sm"
